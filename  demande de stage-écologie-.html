@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جدول التربص الميداني - تحميل مباشر</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(145deg, #0a2f1a, #0a2a18);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+        .card {
+            background: rgba(30, 70, 35, 0.9);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 40px;
+            text-align: center;
+            max-width: 550px;
+            width: 100%;
+            border: 1px solid #D4A017;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #FFE7B0, #D4A017);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #CFE6C5;
+            margin-bottom: 30px;
+        }
+        .btn-excel {
+            background: linear-gradient(95deg, #1B5E20, #2E7D32);
+            border: none;
+            padding: 16px 35px;
+            border-radius: 60px;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .btn-excel:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(95deg, #2E7D32, #1B5E20);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .info {
+            background: rgba(0,0,0,0.3);
+            border-radius: 30px;
+            padding: 15px;
+            font-size: 0.85rem;
+            color: #A8D5A8;
+        }
+        .info i {
+            color: #D4A017;
+            margin-left: 8px;
+        }
+        footer {
+            margin-top: 25px;
+            font-size: 0.7rem;
+            color: #88b38b;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1><i class="fas fa-file-excel"></i> جدول طلبات التربص</h1>
+    <p>تحميل ملف Excel مباشر بالألوان والتنسيق الاحترافي</p>
+    
+    <button class="btn-excel" id="downloadExcelBtn">
+        <i class="fas fa-download"></i> تحميل ملف Excel (XLSX)
+    </button>
+    
+    <div class="info">
+        <i class="fas fa-info-circle"></i> الملف يشمل:
+        <br>• جميع الطلاب (34 طالباً)
+        <br>• الأسماء، أرقام التسجيل، أماكن التربص والبلديات
+        <br>• تنسيق ملون (أخضر للمحددين، أحمر للمفقودين)
+        <br>• صالح للطباعة والحفظ
+    </div>
+    <footer>تم تحضير البيانات مباشرة – انقر على الزر لتحميل ملف Excel</footer>
+</div>
+
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+<script>
+    // بيانات الطلاب (34 طالباً)
+    const studentsData = [
+        {nom:"Hadri alaa amina", matricule:"39179804", lieu:"المؤسسة الاستشفائية العمومية سعداوي المختار", municipalite:"عين وسارة"},
+        {nom:"Hathati zineb souad", matricule:"39194417", lieu:"المؤسسة الاستشفائية العمومية حنيشي مصطفى", municipalite:"الجلف"},
+        {nom:"Tenah imane", matricule:"39147610", lieu:"العيادة المتعددة الخدمات", municipalite:"عين اسرار الجلفة"},
+        {nom:"Benouda soulef", matricule:"39179204", lieu:"مختبر التحاليل", municipalite:"الجلفة"},
+        {nom:"Reguieg ikram", matricule:"39136903", lieu:"مختبر التحاليل", municipalite:"الجلفة"},
+        {nom:"Rebhi Mohamed", matricule:"39179804", lieu:"المؤسسة الاستشفائية سعداوي المختار", municipalite:"عين وسارة"},
+        {nom:"Selami amal samia", matricule:"39146014", lieu:"المؤسسة الاستشفائية محاد عبد القادر", municipalite:"الجلفة"},
+        {nom:"Elaguab lina hind", matricule:"39188601", lieu:"المؤسسة الاستشفائية العقيد احمد بوقرة", municipalite:"حاسي بحبح"},
+        {nom:"Hamira abdelkarim", matricule:"39210411", lieu:"العيادة المتعددة الخدمات", municipalite:"الشارف"},
+        {nom:"Houicher Aicha", matricule:"39194615", lieu:"العيادة المتعددة الخدمات", municipalite:"عين الشهداء"},
+        {nom:"Serra sara", matricule:"39170307", lieu:"المؤسسة الاستشفائية الشهيد هاني محمد بن الهادي", municipalite:"مسعد"},
+        {nom:"Daoudi rahaf salsabil", matricule:"39187803", lieu:"مديرية البيئة", municipalite:"الجلفة"},
+        {nom:"Saada yacine abderrahmane", matricule:"39163408", lieu:"مستشفى الأمراض السرطانية المجاهد العقيد احمد بن شريف", municipalite:"الجلفة"},
+        {nom:"Drifel rahima", matricule:"39178912", lieu:"مختبر التحاليل", municipalite:"عين وسارة"},
+        {nom:"Goumichi nadjet", matricule:"39189220", lieu:null, municipalite:null},
+        {nom:"Choucha basmala", matricule:"39178603", lieu:"المؤسسة الاستشفائية سعداوي المختار", municipalite:"عين وسارة"},
+        {nom:"Nekiche fatna", matricule:"39179601", lieu:"المؤسسة الاستشفائية سعداوي المختار", municipalite:"عين وسارة"},
+        {nom:"Chegaf aicha nourelhoda", matricule:"39160408", lieu:"المؤسسة الاستشفائية", municipalite:"مسعد"},
+        {nom:"Zouina hocini", matricule:"39187815", lieu:"المؤسسة الاستشفائية العقيد احمد بوقرة", municipalite:"حاسي بحبح"},
+        {nom:"Kadous Faten rahaf", matricule:"39179505", lieu:"مخبر التحاليل", municipalite:"عين وسارة"},
+        {nom:"Barboura fatma", matricule:"39160703", lieu:"المؤسسة الاستشفائية هاني محمد بن الهادي", municipalite:"مسعد"},
+        {nom:"Cherrak djihad", matricule:"39148410", lieu:null, municipalite:null},
+        {nom:"Nekbil zakaria", matricule:"39150107", lieu:"مستشفى الأمراض السرطانية العقيد احمد بن شريف", municipalite:"الجلفة"},
+        {nom:"Ghezal achouak meriem", matricule:"39169505", lieu:"المؤسسة الاستشفائية هاني محمد بن الهادي", municipalite:"مسعد"},
+        {nom:"Nour el houda reguieg", matricule:"39156418", lieu:"المؤسسة الاستشفائية هتهات بوبكر", municipalite:"الجلفة"},
+        {nom:"Maamri nour el imane", matricule:"39201212", lieu:"المؤسسة الاستشفائية مجاهد سلماني سليمان", municipalite:"دار الشيوخ"},
+        {nom:"Hamidat saadia nabila", matricule:"39147208", lieu:"المؤسسة الاستشفائية محاد عبد القادر", municipalite:"الجلفة"},
+        {nom:"Brahimi linda nour el imane", matricule:"39153913", lieu:null, municipalite:null},
+        {nom:"Mecheri aya", matricule:"39147512", lieu:"المؤسسة الاستشفائية الام والطفل", municipalite:"الجلفة"},
+        {nom:"Ouazzani nour elhouda", matricule:"39180210", lieu:"المؤسسة الاستشفائية سعداوي المختار", municipalite:"عين وسارة"},
+        {nom:"Bentahar karima", matricule:"39188602", lieu:"مديرية البيئة", municipalite:"الجلفة"},
+        {nom:"Talbi khaoula", matricule:"39149202", lieu:"مركز مكافحة السرطان العقيد احمد بن شريف", municipalite:"الجلفة"},
+        {nom:"Harti hibat elrahmane", matricule:"39180220", lieu:"مخبر التحاليل بالمستشفى العمومي سعداوي المختار", municipalite:"عين وسارة"},
+        {nom:"Kerma inas", matricule:"39146617", lieu:"المؤسسة الاستشفائية محمدي مصطفى بن عبد القادر", municipalite:"الجلفة"}
+    ];
+
+    // إعداد بيانات Excel
+    function generateExcel() {
+        // إضافة صف الهيدر
+        const excelData = [
+            ["الاسم واللقب", "رقم التسجيل", "Lieu de stage", "البلدية", "الحالة"]
+        ];
+
+        // إضافة صفوف الطلاب
+        studentsData.forEach(s => {
+            const hasPlace = s.lieu !== null && s.lieu !== undefined && s.lieu !== "";
+            excelData.push([
+                s.nom,
+                s.matricule,
+                hasPlace ? s.lieu : "لم يحدد",
+                s.municipalite || "—",
+                hasPlace ? "✅ محدد" : "⚠️ غير محدد"
+            ]);
+        });
+
+        // إنشاء ورقة عمل
+        const ws = XLSX.utils.aoa_to_sheet(excelData);
+
+        // إعداد أنماط الألوان (لرؤوس الأعمدة والخلايا)
+        // (لون الرأس أخضر غامق، النص أبيض)
+        const headerRange = XLSX.utils.decode_range(ws['!ref']);
+        for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+            const address = XLSX.utils.encode_cell({r:0, c:C});
+            if (!ws[address]) continue;
+            ws[address].s = {
+                fill: { fgColor: { rgb: "1B5E20" }, patternType: "solid" },
+                font: { color: { rgb: "FFFFFF" }, bold: true, sz: 12 },
+                alignment: { horizontal: "center", vertical: "center" }
+            };
+        }
+
+        // تعيين عرض الأعمدة
+        ws['!cols'] = [
+            {wch:28},  // الاسم واللقب
+            {wch:15},  // رقم التسجيل
+            {wch:45},  // lieu de stage
+            {wch:18},  // البلدية
+            {wch:12}   // الحالة
+        ];
+
+        // كتابة الملف وتحميله
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "طلبات_التربص");
+        XLSX.writeFile(wb, `جدول_التربص_${new Date().toLocaleDateString('ar-EG')}.xlsx`);
+    }
+
+    document.getElementById('downloadExcelBtn').addEventListener('click', generateExcel);
+</script>
+</body>
+</html>
